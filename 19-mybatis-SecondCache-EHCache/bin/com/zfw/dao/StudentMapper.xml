@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zfw.dao.IStudentDao">
+
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+	<resultMap type="com.zfw.beans.Student" id="StudentMapper">
+		<id column="s_id" property="id" />
+		<result column="s_name" property="name" />
+		<result column="s_age" property="age" />
+		<result column="s_score" property="score" />
+	</resultMap>
+
+	<select id="selectStudentById" resultType="Student" resultMap="StudentMapper">
+		select * from t_student where s_id=#{id}
+	</select>
+
+	<!-- 二级缓存局部开关，只对当前查询语句有效 useCache默认为true -->
+	<select id="selectStudentById2" resultType="Student" resultMap="StudentMapper"
+		useCache="false">
+		select * from t_student where s_id=#{id}
+	</select>
+	
+	<!-- 增删改操作不刷新二级缓存 ,flushCache="false"默认为true-->
+	<select id="selectStudentById3" resultType="Student" resultMap="StudentMapper"
+		flushCache="false">
+		select * from t_student where s_id=#{id}
+	</select>
+
+
+	<insert id="insertStudent">
+		insert into t_student(s_name,s_age,s_score)
+		values(#{name},#{age},#{score})
+	</insert>
+
+</mapper>

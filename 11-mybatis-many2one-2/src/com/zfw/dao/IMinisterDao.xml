@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 多对一关联查询是指，在查询多方对象的时候，同时将其所关联的一方对象也查询出来 ，其实多对一的实现方式，和多对一的实现方式是一样的 -->
+<!-- 多表单独查询:先通过条件查出多方，再能过多方的外键去一方去查 -->
+<mapper namespace="com.zfw.dao.IMinisterDao">
+
+	<!-- 第二步：将查出来的一方数据封装到对象里 -->
+	<resultMap type="Minister" id="MinisterMapper">
+		<id column="mid" property="mid" />
+		<result column="mname" property="mname" />
+		<!-- property：指定关联属性，即 Minister类中的 country属性 ,
+		javaType： 关联属性的类型 ,
+		select:从t_country表中查询的<select>标签的id-selectCountryById， 
+		column:意思就是传给selectCountryById对应的<select>标签的参数，此处为countryid -->
+		
+		<!-- 第三步：通过刚才从多方中查询出来数据的countryid作为查询条件，再去 一方表中进行查询-->
+		<association property="country" javaType="Country"
+			select="selectCountryById" column="countryid" />
+	</resultMap>
+	<resultMap type="Country" id="CountryMapper">
+		<id column="cid" property="cid" />
+		<result column="cname" property="cname" />
+	</resultMap>
+	
+	<!-- 第一步：通过条件查出所要查询的多方数据 ，封装到对象中 -->
+	<select id="selectMinisterById" resultMap="MinisterMapper">
+		select
+		mid,mname,countryid from t_minister
+		where mid=#{xxx}
+	</select>
+	
+	<!-- 第四步：通过第三步传过来的查询条件，去一方表中查询 -->
+	<select id="selectCountryById" resultMap="CountryMapper">
+		select cid,cname from
+		t_country where cid=#{xxx}
+	</select>
+</mapper>

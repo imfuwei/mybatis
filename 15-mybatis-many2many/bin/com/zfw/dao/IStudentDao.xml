@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 一般情况下，多对多关系都会通过一个中间表来建立 -->
+<!-- 中间表充当多方，两边表当作一方。因为外键表相对于主键表，外键是建立在多方上的 -->
+
+<mapper namespace="com.zfw.dao.IStudentDao">
+	<resultMap type="Student" id="Studentmapper">
+		<id column="sid" property="id" />
+		<result column="sname" property="name" />
+		<collection property="courses" ofType="Course">
+			<id column="cid" property="id" />
+			<result column="cname" property="name" />
+		</collection>
+	</resultMap>
+	<select id="selectStudentById" resultMap="Studentmapper">
+		select
+		sid,sname,cid,cname from tstudent,tcourse,tmiddle where sid=#{xxx}
+		and
+		studentid=sid and cid=courseid
+	</select>
+</mapper>

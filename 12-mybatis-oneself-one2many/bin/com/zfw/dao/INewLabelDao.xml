@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+		<!-- 自己即充当一方，又充当多方，是 1:n 或 n:1 的变型。
+		对于新闻栏目 NewsColumn，可以充当一方，即父栏目，也可以充当多方，即子栏目。而反映到 DB
+		表中，只有一张表，这张表中具有一个外键，用于表示该栏目的父栏目。一级栏目没有父栏
+		目，所以可以将其外键值设为 0，而子栏目则具有外键值 -->
+<!-- 查询指定栏目的所有子孙栏目 -->
+<!-- 以一对多方式处理，即一方可以看到多方。  -->
+<mapper namespace="com.zfw.dao.INewLabelDao">
+	<resultMap type="NewLabel" id="NewLabelMapper">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<!-- 第二步：通过第一步的查询的id，当作条件再去查询，一直递归下去 -->
+		<collection property="newLabels" ofType="NewLabel" select="selectNewLabelByPid" column="id"/>
+	</resultMap>
+	<!-- 第一次，通过参数条件进行查询 -->
+	<select id="selectNewLabelByPid" resultMap="NewLabelMapper">
+		select id,name from
+		newLabel where pid=#{xxx}
+	</select>
+</mapper>

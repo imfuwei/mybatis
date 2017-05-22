@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 以多对一方式处理，即一方可以看到多方。 -->
+<mapper namespace="com.zfw.dao.INewLabelDao">
+	<resultMap type="NewLabel" id="NewLabelMapper">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<!-- 第二步，通过通过第一步查询出的外键当查询条件，再去查询与之对应的主键列，循环下去 -->
+		<association property="parent" javaType="NewLabel"
+			select="selectNewLabelById" column="pid" />
+	</resultMap>
+	<!-- 第一步，通过参数来查询出数据 -->
+	<select id="selectNewLabelById" resultMap="NewLabelMapper">
+		select id,name,pid
+		from
+		newLabel where id=#{xxx}
+	</select>
+</mapper>

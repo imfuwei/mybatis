@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zfw.dao.IStudentDao">
+	<resultMap type="Student" id="StudentMapper">
+		<id column="s_id" property="id" />
+		<result column="s_name" property="name" />
+		<result column="s_age" property="age" />
+		<result column="s_score" property="score" />
+	</resultMap>
+	<!-- 第一种方法 -->
+	<!-- 多个条件参数，分开传进来，可以通过参数索引#{index}的方式逐个接收每个参数 -->
+	<!-- 一般是#{0}代表接口中List<Student> selectStudents1(String name,int score)第一个参数 
+		name -->
+	<!-- #{1}代表接口中List<Student> selectStudents1(String name,int score)第二个参数 
+		score。多个的话，以此类推 -->
+	<!-- 但是我这个用到#{0}就不行，这时候要看错误信息，错误信息告诉我，绑定的0这个参数不存在，并且告诉了可用的参数有哪些 
+		Cause: org.apache.ibatis.binding.BindingException: 
+		Parameter '0' not found. Available parameters are [arg1, arg0, param1, param2] 
+		这时候就要用到框架给出的可用参数param1,param2,或者arg0,arg1
+		-->
+	<select id="selectStudents1" resultMap="StudentMapper">
+		select * from t_student
+		where s_name like '%' #{arg0} '%'
+		and s_age > #{arg1} and s_age &lt; #{arg2}
+	</select>
+
+	<!-- 第二个方法：将多个参数封装成map再传进来 -->
+	<!-- 然后通过map的key来获取对应的参数 -->
+	<select id="selectStudentsMap" resultMap="StudentMapper">
+		select * from t_student
+		where s_name like '%' #{namekey} '%'
+		and s_age > #{agekey}
+	</select>
+
+</mapper>

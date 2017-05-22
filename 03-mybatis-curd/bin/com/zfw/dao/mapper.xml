@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="test">
+	<!-- 单纯插入数据 -->
+	<insert id="insertStudent">
+		insert into student(name,age,score)
+		values(#{name},#{age},#{score})
+	</insert>
+	<!-- 插入数据后，然后查询插入的id -->
+	<insert id="insertStudentCatchId">
+
+		insert into student(name,age,score) values(#{name},#{age},#{score})
+		<!-- resultType:获取主键的类型
+		 keyProperty:指出主键在 Java 类中对应的属性名。此处会将获取的主键值直接封装到被插入的 Student 对象中，即 dao 中 insert()方法的第二个参数对象中。
+		  order：指出 id 的生成相对于 insert 语句的执行是在前还是在后。 
+		  
+			MySql 数据库表中的 id，均是先执行 insert 语句，而后生成 id， 所以需要设置为 AFTER； Oracle 数据库表中的 id，则是在 
+			insert 执行之前先生成，所以需要设置为 BEFORE。 当前的 MyBatis 版本，不指定 order 属性，则会根据所用 DBMS，自动选择其值。 -->
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			select	@@identity
+		</selectKey>
+	</insert>
+	
+	<!-- #{}是一个占位符，里面写啥都中，表示delete()方法传过来的参数 -->
+	<delete id="deleteStudentById">
+		delete from student where id=#{id}
+	</delete>
+	
+	<update id="updateStudentById">
+		update student set name=#{name},age=#{age},score=#{score} where id=#{id}
+	</update>
+	
+	<select id="selectStudentById" resultType="Student">
+		select * from student where id=#{id}
+	</select>
+	
+	<!-- resultType:每查出 DB 中的一条记录，将该记录封装成为的对象的类型。每查出 DB 中的一条记录，将该记录封装成为的对象的类型。
+			   一般为全限定性类名，但是一办情况下，一个映射文件对应一个类，所以在主配置文件中要是配了类的别名，就可以直接把别名写进去了 -->
+	<select id="selectStudents" resultType="Student">
+		select * from student
+	</select>
+	
+	<select id="selectStudentsByName" resultType="Student">
+		<!-- select * from student where name like concat('%',#{name},'%') -->
+		<!-- select * from student where name like '%' #{name} '%' -->
+		<!-- 上面两种方式等同，不过第二种'%' #{name} '%'中间一定要有空格 -->
+		
+		
+		<!-- 这种方式是直接追加到sql语句中的，会出现sql注入 -->
+		<!-- select * from student where name like '%${value}%' -->
+		
+		<!-- 这种是在java中事先把参数拼接成%n% ,如：students = sqlSession.selectList("selectStudentsByName", "%"+name+"%");-->
+		select * from student where name like #{name}
+	</select>
+
+	<select id="selectStudentByMap" resultType="Student">
+		<!-- 此处的StudentId是传过来的Map的key -->
+		select * from student where id=#{StudentId}
+	</select>
+	
+	<select id="selectStudentByMap2" resultType="Student">
+		<!-- 如果传过来的是一个对象，则此处应为对象的属性 -->
+		select * from student where id=#{student.id}
+	</select>
+	
+</mapper>

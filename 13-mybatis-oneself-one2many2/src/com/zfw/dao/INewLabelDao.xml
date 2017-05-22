@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 查询指定栏目及其所有子孙栏目 -->
+<!-- 以一对多方式处理，即一方可以看到多方。  -->
+<mapper namespace="com.zfw.dao.INewLabelDao">
+	<resultMap type="NewLabel" id="NewLabelMapper">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<!-- 第二步：通过第一步的查询的id，当作条件再去查询，一直递归下去 -->
+		<collection property="newLabels" ofType="NewLabel" select="selectNewLabelByPid" column="id"/>
+	</resultMap>
+	<select id="selectNewLabelByPid" resultMap="NewLabelMapper">
+		select id,name from
+		newLabel where pid=#{xxx}
+	</select>
+	<!-- 第一步:通过查询条件进行查询 -->
+	<select id="selectNewLabelById" resultMap="NewLabelMapper">
+		select id,name from newLabel where id=#{xxx}
+	</select>
+</mapper>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<!-- 引用jdbc配置文件 -->
+	<properties resource="jdbc.properties" />
+
+	<typeAliases>
+		<!-- 在此处定义了bean的别名，然后可以去mapper.xml文件中去引用 ,但要每一个类都要去定义别名-->
+		<!-- <typeAlias type="com.zfw.beans.Student" alias="Student" /> -->
+
+		<!-- 为了方便以后不是所有的类都起个别名，mybatis可以使用package来配置，意思就是，这个包里的所有全限定性类都是以类名来定义的 
+			如：com.zfw.beans.Student,别名是Student -->
+		<package name="com.zfw.benas"/>
+	</typeAliases>
+	<!-- 配置运行环境 -->
+	<!-- environments的default的值是指你要用哪个environment 比如，有两个environment,一个enviroment的id为test01,一个是test02, 
+		如果environments的default的值如果是test01,那么这个运行环境就是id为test01的environment 如果environments的default的值如果是test02,那么这个运行环境就是id为test02的environment 
+		为什么要这样? 你有可能会在test01的environment的数据库是mysql,但你又想测orcal的数据库， 又或者你url连接有参数 所以就给你这样的形式，让你去测试 -->
+	<environments default="test02">
+
+		<!-- 没有参数的url 的运行环境 -->
+		<environment id="test01">
+			<!-- 事务管理器 ,有两个值，一个是JDBC，是采用JDBC的事务管理机制,一个是MANAGED，由容器来管理事务的整个生命周期(如Spring容器) -->
+			<transactionManager type="JDBC"></transactionManager>
+			<dataSource type="POOLED">
+				<!-- 可以在帮助文档中config约束中找到这些name的值 -->
+				<property name="driver" value="com.mysql.jdbc.Driver" />
+				<property name="url" value="jdbc:mysql:///zfw" />
+				<property name="username" value="root" />
+				<property name="password" value="123" />
+			</dataSource>
+		</environment>
+		<!-- 有参数的url 的运行环境 -->
+		<environment id="test02">
+			<!-- 事务管理器 ,有两个值，一个是JDBC，是采用JDBC的事务管理机制,一个是MANAGED，由容器来管理事务的整个生命周期(如Spring容器) -->
+			<transactionManager type="JDBC"></transactionManager>
+			<dataSource type="POOLED">
+				<!-- 可以在帮助文档中config约束中找到这些name的值 -->
+				<property name="driver" value="${jdbc.driver}" />
+				<property name="url" value="${jdbc.url}" />
+				<property name="username" value="${jdbc.username}" />
+				<property name="password" value="${jdbc.password}" />
+			</dataSource>
+		</environment>
+	</environments>
+	<!-- 注册映射文件 -->
+	<mappers>
+		<mapper resource="com/zfw/dao/mapper.xml" />
+	</mappers>
+
+</configuration>

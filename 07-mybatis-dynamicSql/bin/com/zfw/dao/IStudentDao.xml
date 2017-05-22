@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zfw.dao.IStudentDao">
+	<resultMap type="Student" id="StudentMapper">
+		<id property="id" column="s_id" />
+		<result property="name" column="s_name" />
+		<result property="age" column="s_age" />
+		<result property="score" column="s_score" />
+	</resultMap>
+	<!-- 	
+	if标签，当test的值为true时，会将if标签包含的sql拼接到sql语句中。
+	但是，如果条件全部不成立，where后面不会有任何语句，会导致sql语句错误，所以写1=1类似的为true的语句，为防止sql语句错误 -->
+	<select id="selectStudentsIf" resultMap="StudentMapper">
+		select * from t_student
+		where 1=1
+		<if test="name!=null and name!= '' ">
+			and s_name like '%' #{name} '%'
+		</if>
+		<if test="age!=null and age!=''">
+			and s_age > #{age}
+		</if>
+	</select>
+	<!-- 	if标签用的时候，永远得写一个1=1的真子句，防止where后为空，造成sql语句错误。
+	但永远写这一个真子句，当数据多时，严重影响查询效率。
+	所以用<where>标签，在有查询条件时，可以自动添加where子句，没有查询条件时，不会添加where子句。 -->
+	<select id="selectStudentsWhere" resultMap="StudentMapper">
+		select * from t_student
+		<where>
+			<!-- 最靠近where标签的sql片断为true ，不管有没有and，框架都会自动将多出的and的去掉-->
+			<if test="name!=null and name!=''">
+				and s_name like '%' #{name} '%'
+			</if>
+			<!-- 第2+个为true的sql片断，必须写上and,框架不会自动加and -->
+			<if test="age >0">
+				and s_age > #{age}
+			</if>
+		</where>
+	</select>
+	
+	<!-- choose标签，选择标签，类似于switch……case -->
+	<select id="selectStudentsChoose" resultMap="StudentMapper">
+		select * from t_student 
+		<where>
+			<choose>
+				<when test="name!=null and name!=''">
+					and s_name like '%' #{name} '%'
+				</when>
+				<when test="age > 0">
+					and s_age > #{age}
+				</when>
+				<otherwise>
+					and 1!=1
+				</otherwise>
+			</choose>
+		</where>
+	</select>
+	<!-- foreach遍历数组 
+		collection： 表示要遍历的集合类型，这里是数组，即 array
+		open、 close、 separator 为对遍历内容的 SQL 拼接
+	-->
+	<select id="selectStudentForeachArray" resultMap="StudentMapper">
+		select * from t_student
+		<if test="array!=null and array.length>0"></if>
+		where s_id in
+		<foreach collection="array" open="(" item="myid" separator="," close=")">
+			#{myid}		
+		</foreach>
+	</select>
+	<!-- foreach遍历基本类形的list 
+		collection： 表示要遍历的集合类型，这里是数组，即 list
+		open、 close、 separator 为对遍历内容的 SQL 拼接
+	-->
+	<select id="selectStudentForeachBaseList" resultMap="StudentMapper">
+		select * from t_student
+		<if test="list!=null and list.size>0"></if>
+		where s_id in
+		<foreach collection="list" open="(" item="myid" separator="," close=")">
+			#{myid}		
+		</foreach>
+	</select>
+	
+	<select id="selectStudentForeachGenericList" resultMap="StudentMapper">
+		select * from t_student
+		<if test="list!=null and list.size>0">
+			where s_id in
+			<foreach collection="list" open="(" item="stu" separator="," close=")">
+				#{stu.id}
+			</foreach>
+		</if>
+	</select>
+	<!-- sql标签，可以把重复的sql语句放到sql标签中，起到复用的作用 -->
+	<sql id="selectHead">
+		select * from t_student
+	</sql>
+	<select id="selectStudentSql" resultMap="StudentMapper">
+		<include refid="selectHead"/> where s_id=#{xxx}
+	</select>
+</mapper>

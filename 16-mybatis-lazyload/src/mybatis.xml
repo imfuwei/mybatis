@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<properties resource="db.properties" />
+		<!-- 直接加载：默认的，就是直接给你查出来 ，将延迟加载开关 lazyLoadingEnabled 开启（置为 false）-->
+		<!-- 深度延迟加载：
+		执行对主加载对象的查询时，不会执行对关联对象的查询。访问主加载对象的详情时也不会执行关联对象的 select 查询。只有当真正访问关联对象的详情时，才会执行对关联对象的 select 查询。
+		 将延迟加载开关 lazyLoadingEnabled 开启（置为 true）将侵入式延迟加载开关 aggressiveLazyLoading 关闭（置为 false） -->
+		<!-- 侵入式延迟：
+		 执行对主加载对象的查询时，不会执行对关联对象的查询。但当要访问主加载对象的详情时，就会马上执行关联对象的 select 查询。 即对关联对象的查询执行，	侵入到了主加载对象的详情访问中。
+		 将延迟加载开关 lazyLoadingEnabled 开启（置为 true），将侵入式延迟加载开关 aggressiveLazyLoading 也开启（置为 true，默认为 true）。
+		  -->
+	<!-- 设置整个应用所使用的常量 -->
+	<settings>
+		<!-- 延迟加载总开关 -->
+		<setting name="lazyLoadingEnabled" value="true"/>
+		<!-- 侵入式延迟加载开关 -->
+		<setting name="aggressiveLazyLoading" value="false"/>
+	</settings>
+	
+	<typeAliases>
+		<package name="com.zfw.beans" />
+	</typeAliases>
+	<environments default="mysql">
+		<environment id="mysql">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="${jdbc.driver}" />
+				<property name="url" value="${jdbc.url}" />
+				<property name="username" value="${jdbc.username}" />
+				<property name="password" value="${jdbc.password}" />
+			</dataSource>
+		</environment>
+	</environments>
+	<mappers>
+		<!-- 用package时，有一个条件，就是映射文件需要与接口类名相同 -->
+		<package name="com.zfw.dao"/>
+	</mappers>
+</configuration>

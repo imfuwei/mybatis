@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 一对多关联查询:在查询一方的时候，同时将其所关联外键的多方也都查询出来。 -->
+<!-- 多表连接查询：只在一条sql语句中将表关联查询（在sql语句中，直接多表连接查询 ）-->
+<mapper namespace="com.zfw.dao.ICountryDao">
+	<resultMap type="Country" id="CounrtyMapper">
+		<id column="cid" property="cid" />
+		<result column="cname" property="cname" />
+		<!-- 此处配置集合映射，property就是实体中那个set集合的属性，ofType是指set集合中的泛型类型 -->
+		<collection property="ministers" ofType="Minister">
+			<id column="mid" property="mid" />
+			<result column="mname" property="mname" />
+		</collection>
+	</resultMap>
+	<select id="selectCountryById" resultMap="CounrtyMapper">
+		select
+		cid,cname,mid,mname from t_country,t_minister
+		where cid=#{xxx} and
+		countryId=cid
+	</select>
+
+</mapper>

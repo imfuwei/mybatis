@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 一对多关联查询:在查询一方的时候，同时将其所关联外键的多方也都查询出来。 -->
+<!-- 多表单独查询方式：先查出一方的主键id,再通过此主键id作为条件，去多方进行查询，从而查出多方的外键与一方主键相同的数据 -->
+
+
+<mapper namespace="com.zfw.dao.ICountryDao">
+
+
+	<!-- 第二步：将查出来的一方数据封装到对象里 -->
+	<resultMap type="Country" id="CounrtyMapper">
+		<id column="cid" property="cid" />
+		<result column="cname" property="cname" />
+		<!-- 此处配置集合映射，property就是实体中那个set集合的属性， ofType是指set集合中的泛型类型 ， 
+			select:从t_minister表中查询的<select>标签的id-selectMinisterByCountryId， 
+			column:意思就是传给selectMinisterByCountryId对应的<select>标签的参数，此处为cid -->
+			
+		<!-- 第三步：通过刚才从一方中查询出来数据的cid作为查询条件，再去 多方表中进行查询-->
+		<collection property="ministers" ofType="Minister"
+			select="selectMinisterByCountryId" column="cid" />
+	</resultMap>
+
+	<resultMap type="Minister" id="MinisterMapper">
+		<id column="mid" property="mid" />
+		<result column="mname" property="mname" />
+	</resultMap>
+	<!-- 第一步：通过条件查出所要查询的一方数据 ，封装到对象中-->
+	<select id="selectCountryById" resultMap="CounrtyMapper">
+		select cid,cname from t_country where cid=#{xxx}
+	</select>
+
+	<!-- 第四步：通过第三步传过来的查询条件，去多方表中查询 -->
+	<select id="selectMinisterByCountryId" resultMap="MinisterMapper">
+		select
+		mid,mname from t_minister where countryId=#{xxx}
+	</select>
+</mapper>
